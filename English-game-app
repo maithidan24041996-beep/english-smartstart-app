@@ -1,0 +1,534 @@
+<header>
+    <div class="logo" onclick="app.goHome()">
+        <div class="logo-box">EN</div>
+        <h1 class="title-font">FUN LAB🚀</h1>
+    </div>
+    <div class="score-badge">
+        <span>⭐</span>
+        <span id="global-score">0</span>
+    </div>
+</header>
+
+<div id="app" class="container">
+    <!-- Content injected by JS -->
+</div>
+
+<footer>
+    <div class="teacher-name mb-1">Developed by Ms Dan – Primary English Teacher</div>
+    <div class="mb-2" style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">
+        Innovative Learning for Future Leaders
+    </div>
+    <div style="font-size: 0.7rem;">© 2026 – For educational use. Powered by Ms Dan's Curriculum.</div>
+</footer>
+
+<script>
+    /* ============================================================================
+       TEACHER EDIT AREA - CẬP NHẬT NỘI DUNG TẠI ĐÂY
+       ============================================================================ */
+    const CONTENT = [
+        {
+            grade: 3,
+            themes: [
+                {
+                    title: "School Items",
+                    icon: "🏫",
+                    vocab: [
+                        { en: "Pencil", vi: "Bút chì" },
+                        { en: "Notebook", vi: "Quyển vở" },
+                        { en: "Ruler", vi: "Thước kẻ" },
+                        { en: "Eraser", vi: "Cục tẩy" },
+                        { en: "Bag", vi: "Cặp sách" }
+                    ],
+                    sentences: [
+                        { en: "This is my pencil.", vi: "Đây là bút chì của mình.", missing: "pencil" },
+                        { en: "Open your book.", vi: "Mở sách ra.", missing: "book" }
+                    ]
+                },
+                {
+                    title: "Family Members",
+                    icon: "👨‍👩‍👧‍👦",
+                    vocab: [
+                        { en: "Father", vi: "Bố" },
+                        { en: "Mother", vi: "Mẹ" },
+                        { en: "Brother", vi: "Anh/Em trai" },
+                        { en: "Sister", vi: "Chị/Em gái" }
+                    ],
+                    sentences: [
+                        { en: "I love my mother.", vi: "Mình yêu mẹ của mình.", missing: "love" }
+                    ]
+                }
+            ]
+        },
+        {
+            grade: 4,
+            themes: [
+                {
+                    title: "Wild Animals",
+                    icon: "🦁",
+                    vocab: [
+                        { en: "Elephant", vi: "Con voi" },
+                        { en: "Giraffe", vi: "Hươu cao cổ" },
+                        { en: "Monkey", vi: "Con khỉ" },
+                        { en: "Tiger", vi: "Con hổ" }
+                    ],
+                    sentences: [
+                        { en: "I like monkeys.", vi: "Mình thích những con khỉ.", missing: "like" }
+                    ]
+                },
+                {
+                    title: "Weather",
+                    icon: "☀️",
+                    vocab: [
+                        { en: "Sunny", vi: "Có nắng" },
+                        { en: "Rainy", vi: "Có mưa" },
+                        { en: "Cloudy", vi: "Nhiều mây" },
+                        { en: "Windy", vi: "Có gió" }
+                    ],
+                    sentences: [
+                        { en: "How is the weather?", vi: "Thời tiết thế nào?", missing: "weather" }
+                    ]
+                }
+            ]
+        },
+        {
+            grade: 5,
+            themes: [
+                {
+                    title: "Dream Jobs",
+                    icon: "🧑‍⚕️",
+                    vocab: [
+                        { en: "Doctor", vi: "Bác sĩ" },
+                        { en: "Teacher", vi: "Giáo viên" },
+                        { en: "Farmer", vi: "Nông dân" },
+                        { en: "Pilot", vi: "Phi công" }
+                    ],
+                    sentences: [
+                        { en: "I want to be a doctor.", vi: "Mình muốn trở thành bác sĩ.", missing: "want" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    /* ============================================================================
+       END OF TEACHER EDIT AREA
+       ============================================================================ */
+
+    // App Core
+    const app = {
+        state: {
+            view: 'grades', // grades, themes, games, playing
+            score: 0,
+            selectedGrade: null,
+            selectedTheme: null,
+            currentGame: null
+        },
+
+        init() {
+            this.render();
+        },
+
+        updateScore(points) {
+            this.state.score += points;
+            document.getElementById('global-score').innerText = this.state.score;
+        },
+
+        goHome() {
+            this.state.view = 'grades';
+            this.render();
+        },
+
+        render() {
+            const container = document.getElementById('app');
+            container.innerHTML = '';
+            
+            switch(this.state.view) {
+                case 'grades': this.renderGrades(container); break;
+                case 'themes': this.renderThemes(container); break;
+                case 'games': this.renderGames(container); break;
+                case 'playing': this.renderGameView(container); break;
+            }
+        },
+
+        renderGrades(el) {
+            el.innerHTML = `
+                <div class="animate-in text-center mb-4">
+                    <h2 class="title-font mb-1" style="font-size: 2.5rem; color: #075985;">Welcome Students!</h2>
+                    <p style="font-weight: 700; color: var(--primary);">Lựa chọn khối lớp của bạn để bắt đầu nhé</p>
+                </div>
+                <div class="grid grid-3 animate-in">
+                    <div class="card grade-card grade-3" onclick="app.selectGrade(3)">
+                        <div style="font-size: 1.2rem; font-weight: 800; opacity: 0.7;">GRADE</div>
+                        <h2>3</h2>
+                        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;">START</button>
+                    </div>
+                    <div class="card grade-card grade-4" onclick="app.selectGrade(4)">
+                        <div style="font-size: 1.2rem; font-weight: 800; opacity: 0.7;">GRADE</div>
+                        <h2>4</h2>
+                        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;">START</button>
+                    </div>
+                    <div class="card grade-card grade-5" onclick="app.selectGrade(5)">
+                        <div style="font-size: 1.2rem; font-weight: 800; opacity: 0.7;">GRADE</div>
+                        <h2>5</h2>
+                        <button class="btn" style="background: rgba(255,255,255,0.2); color: white;">START</button>
+                    </div>
+                </div>
+            `;
+        },
+
+        selectGrade(grade) {
+            this.state.selectedGrade = CONTENT.find(c => c.grade === grade);
+            this.state.view = 'themes';
+            this.render();
+        },
+
+        renderThemes(el) {
+            const themes = this.state.selectedGrade.themes;
+            let html = `
+                <div class="animate-in mb-4 flex items-center justify-between bg-white p-4 rounded-3xl shadow-sm">
+                    <button class="btn btn-ghost" onclick="app.goHome()">⬅️ Đổi Khối Lớp</button>
+                    <h2 class="title-font text-center" style="color: var(--primary);">Grade ${this.state.selectedGrade.grade}: Chủ Đề</h2>
+                </div>
+                <div class="grid grid-3 animate-in">
+            `;
+            themes.forEach((theme, idx) => {
+                html += `
+                    <div class="card text-center cursor-pointer hover:border-primary transition-all" onclick="app.selectTheme(${idx})">
+                        <div style="font-size: 4rem; margin-bottom: 1rem;">${theme.icon}</div>
+                        <h3 style="font-size: 1.5rem; font-weight: 800; color: #0369a1;">${theme.title}</h3>
+                        <div style="margin-top: 10px; font-weight: 700; color: #94a3b8; font-size: 0.8rem;">
+                            ${theme.vocab.length} Từ vựng • ${theme.sentences.length} Mẫu câu
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            el.innerHTML = html;
+        },
+
+        selectTheme(idx) {
+            this.state.selectedTheme = this.state.selectedGrade.themes[idx];
+            this.state.view = 'games';
+            this.render();
+        },
+
+        renderGames(el) {
+            el.innerHTML = `
+                <div class="animate-in mb-4 flex items-center justify-between bg-white p-4 rounded-3xl shadow-sm">
+                    <button class="btn btn-ghost" onclick="app.state.view='themes'; app.render();">⬅️ Chọn Lại Chủ Đề</button>
+                    <div style="text-align: right">
+                        <div style="font-size: 0.7rem; font-weight: 800; color: #94a3b8; text-transform: uppercase;">Chủ đề</div>
+                        <h2 class="title-font" style="color: var(--primary); font-size: 1.2rem;">${this.state.selectedTheme.title}</h2>
+                    </div>
+                </div>
+                <div class="grid grid-3 animate-in">
+                    <div class="card cursor-pointer" style="background: #fdf2f8; border-color: #fce7f3;" onclick="app.startGame('match')">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧩</div>
+                        <h3 style="color: #be185d; font-weight: 800;">GHÉP TỪ</h3>
+                        <p style="font-size: 0.9rem; font-weight: 600; color: #db2777;">Nối từ Anh - Việt</p>
+                    </div>
+                    <div class="card cursor-pointer" style="background: #ecfdf5; border-color: #d1fae5;" onclick="app.startGame('quiz')">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎯</div>
+                        <h3 style="color: #047857; font-weight: 800;">TRẮC NGHIỆM</h3>
+                        <p style="font-size: 0.9rem; font-weight: 600; color: #059669;">Chọn nghĩa đúng</p>
+                    </div>
+                    <div class="card cursor-pointer" style="background: #fffbeb; border-color: #fef3c7;" onclick="app.startGame('listen')">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🎧</div>
+                        <h3 style="color: #b45309; font-weight: 800;">NGHE & CHỌN</h3>
+                        <p style="font-size: 0.9rem; font-weight: 600; color: #d97706;">Luyện kỹ năng nghe</p>
+                    </div>
+                    <div class="card cursor-pointer" style="background: #eff6ff; border-color: #dbeafe;" onclick="app.startGame('order')">
+                        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔡</div>
+                        <h3 style="color: #1d4ed8; font-weight: 800;">SẮP XẾP CÂU</h3>
+                        <p style="font-size: 0.9rem; font-weight: 600; color: #2563eb;">Luyện viết câu</p>
+                    </div>
+                </div>
+            `;
+        },
+
+        startGame(type) {
+            this.state.view = 'playing';
+            this.state.currentGame = type;
+            this.render();
+            this.initGameLogic(type);
+        },
+
+        renderGameView(el) {
+            el.innerHTML = `
+                <div class="animate-in mb-4 flex items-center justify-between">
+                    <button class="btn btn-ghost" onclick="app.state.view='games'; app.render();">Thoát</button>
+                    <h2 id="game-title" class="title-font" style="color: var(--primary);">Đang chơi...</h2>
+                </div>
+                <div id="game-container" class="animate-in"></div>
+            `;
+        },
+
+        initGameLogic(type) {
+            const container = document.getElementById('game-container');
+            const title = document.getElementById('game-title');
+
+            if (type === 'match') {
+                title.innerText = "🧩 Ghép Từ";
+                this.runMatchGame(container);
+            } else if (type === 'quiz') {
+                title.innerText = "🎯 Trắc Nghiệm";
+                this.runQuizGame(container);
+            } else if (type === 'listen') {
+                title.innerText = "🎧 Nghe và Chọn";
+                this.runListenGame(container);
+            } else if (type === 'order') {
+                title.innerText = "🔡 Sắp Xếp Câu";
+                this.runOrderGame(container);
+            }
+        },
+
+        // --- Game: Matching ---
+        runMatchGame(el) {
+            const vocab = this.state.selectedTheme.vocab;
+            let cards = [];
+            vocab.forEach((v, i) => {
+                cards.push({ id: i, text: v.en, type: 'en' });
+                cards.push({ id: i, text: v.vi, type: 'vi' });
+            });
+            cards.sort(() => Math.random() - 0.5);
+
+            el.innerHTML = `<div class="game-grid" id="match-grid"></div>`;
+            const grid = document.getElementById('match-grid');
+            let firstSelected = null;
+
+            cards.forEach((card, idx) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'match-card';
+                cardEl.innerText = card.text;
+                cardEl.onclick = () => {
+                    if (cardEl.classList.contains('matched')) return;
+                    if (card.type === 'en') this.speak(card.text);
+
+                    if (firstSelected) {
+                        if (firstSelected.idx === idx) {
+                            cardEl.classList.remove('selected');
+                            firstSelected = null;
+                            return;
+                        }
+
+                        if (firstSelected.id === card.id && firstSelected.type !== card.type) {
+                            // Match!
+                            cardEl.classList.add('matched');
+                            firstSelected.el.classList.add('matched');
+                            firstSelected.el.classList.remove('selected');
+                            this.updateScore(10);
+                            firstSelected = null;
+                            
+                            // Check win
+                            if (document.querySelectorAll('.match-card.matched').length === cards.length) {
+                                setTimeout(() => alert("Hoàn thành! Bạn thật giỏi! 🌟"), 500);
+                            }
+                        } else {
+                            // No match
+                            firstSelected.el.classList.remove('selected');
+                            cardEl.classList.add('selected');
+                            firstSelected = { id: card.id, type: card.type, el: cardEl, idx };
+                        }
+                    } else {
+                        cardEl.classList.add('selected');
+                        firstSelected = { id: card.id, type: card.type, el: cardEl, idx };
+                    }
+                };
+                grid.appendChild(cardEl);
+            });
+        },
+
+        // --- Game: Quiz ---
+        runQuizGame(el) {
+            const vocab = [...this.state.selectedTheme.vocab];
+            let currentIdx = 0;
+
+            const nextQuestion = () => {
+                if (currentIdx >= vocab.length) {
+                    el.innerHTML = `<div class="card text-center"><h2>Chúc mừng! Bạn đã hoàn thành bài thi.</h2><button class="btn btn-primary mt-4" onclick="app.state.view='games'; app.render();">Quay lại</button></div>`;
+                    return;
+                }
+
+                const q = vocab[currentIdx];
+                this.speak(q.en);
+                const distractors = vocab.filter(v => v.en !== q.en).map(v => v.vi);
+                const options = [q.vi, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+
+                el.innerHTML = `
+                    <div class="card animate-in">
+                        <div class="text-center mb-4">
+                            <h2 style="font-size: 3rem; color: var(--primary); font-weight: 800;">${q.en}</h2>
+                            <button class="btn btn-ghost" onclick="app.speak('${q.en}')">🔊 Nghe Lại</button>
+                        </div>
+                        <div id="quiz-options"></div>
+                    </div>
+                `;
+
+                const optContainer = document.getElementById('quiz-options');
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        if (opt === q.vi) {
+                            btn.classList.add('correct');
+                            this.updateScore(10);
+                            setTimeout(() => { currentIdx++; nextQuestion(); }, 1000);
+                        } else {
+                            btn.classList.add('wrong');
+                            setTimeout(() => btn.classList.remove('wrong'), 500);
+                        }
+                    };
+                    optContainer.appendChild(btn);
+                });
+            };
+
+            nextQuestion();
+        },
+
+        // --- Game: Listening ---
+        runListenGame(el) {
+            const vocab = [...this.state.selectedTheme.vocab];
+            let currentIdx = 0;
+
+            const nextQuestion = () => {
+                if (currentIdx >= vocab.length) {
+                    el.innerHTML = `<div class="card text-center"><h2>Giỏi quá! Kỹ năng nghe của bạn rất tuyệt!</h2><button class="btn btn-primary mt-4" onclick="app.state.view='games'; app.render();">Quay lại</button></div>`;
+                    return;
+                }
+
+                const q = vocab[currentIdx];
+                this.speak(q.en);
+                const distractors = vocab.filter(v => v.en !== q.en).map(v => v.en);
+                const options = [q.en, ...distractors.slice(0, 3)].sort(() => Math.random() - 0.5);
+
+                el.innerHTML = `
+                    <div class="card animate-in text-center">
+                        <div class="mb-4">
+                            <div style="font-size: 5rem; cursor: pointer; display: inline-block;" onclick="app.speak('${q.en}')">🔊</div>
+                            <p style="font-weight: 700; color: #94a3b8;">Nhấp vào loa để nghe</p>
+                        </div>
+                        <div class="game-grid" id="listen-options" style="grid-template-columns: repeat(2, 1fr)"></div>
+                    </div>
+                `;
+
+                const optContainer = document.getElementById('listen-options');
+                options.forEach(opt => {
+                    const btn = document.createElement('button');
+                    btn.className = 'quiz-option';
+                    btn.style.textAlign = 'center';
+                    btn.innerText = opt;
+                    btn.onclick = () => {
+                        if (opt === q.en) {
+                            btn.classList.add('correct');
+                            this.updateScore(10);
+                            setTimeout(() => { currentIdx++; nextQuestion(); }, 1000);
+                        } else {
+                            btn.classList.add('wrong');
+                        }
+                    };
+                    optContainer.appendChild(btn);
+                });
+            };
+
+            nextQuestion();
+        },
+
+        // --- Game: Sentence Order ---
+        runOrderGame(el) {
+            const sentences = [...this.state.selectedTheme.sentences];
+            let currentIdx = 0;
+
+            const nextQuestion = () => {
+                if (currentIdx >= sentences.length) {
+                    el.innerHTML = `<div class="card text-center"><h2>Bạn đã làm chủ các mẫu câu rồi!</h2><button class="btn btn-primary mt-4" onclick="app.state.view='games'; app.render();">Quay lại</button></div>`;
+                    return;
+                }
+
+                const q = sentences[currentIdx];
+                const fullSentence = q.en;
+                const words = fullSentence.replace(/[?.!]/g, '').split(' ').sort(() => Math.random() - 0.5);
+                let currentSelection = [];
+
+                const updateUI = () => {
+                    el.innerHTML = `
+                        <div class="card animate-in text-center">
+                            <p style="font-size: 1.2rem; font-weight: 700; color: #64748b; margin-bottom: 1rem;">"${q.vi}"</p>
+                            <div class="sentence-slot" id="slot"></div>
+                            <div id="pills"></div>
+                            <div style="margin-top: 2rem;">
+                                <button class="btn btn-primary" id="check-btn">Kiểm Tra</button>
+                                <button class="btn btn-ghost" id="reset-btn">Làm lại</button>
+                            </div>
+                        </div>
+                    `;
+
+                    const slot = document.getElementById('slot');
+                    currentSelection.forEach((w, i) => {
+                        const pill = document.createElement('span');
+                        pill.className = 'word-pill';
+                        pill.innerText = w;
+                        pill.onclick = () => {
+                            currentSelection.splice(i, 1);
+                            words.push(w);
+                            updateUI();
+                        };
+                        slot.appendChild(pill);
+                    });
+
+                    const pillsContainer = document.getElementById('pills');
+                    words.forEach((w, i) => {
+                        const pill = document.createElement('span');
+                        pill.className = 'word-pill';
+                        pill.innerText = w;
+                        pill.onclick = () => {
+                            currentSelection.push(w);
+                            words.splice(i, 1);
+                            updateUI();
+                        };
+                        pillsContainer.appendChild(pill);
+                    });
+
+                    document.getElementById('check-btn').onclick = () => {
+                        if (currentSelection.join(' ').toLowerCase() === fullSentence.replace(/[?.!]/g, '').toLowerCase()) {
+                            this.speak(fullSentence);
+                            document.getElementById('slot').style.background = '#d1fae5';
+                            document.getElementById('slot').style.borderColor = '#10b981';
+                            this.updateScore(20);
+                            setTimeout(() => { currentIdx++; nextQuestion(); }, 1500);
+                        } else {
+                            document.getElementById('slot').style.background = '#fee2e2';
+                            document.getElementById('slot').style.borderColor = '#ef4444';
+                            setTimeout(() => {
+                                document.getElementById('slot').style.background = '#f8fafc';
+                                document.getElementById('slot').style.borderColor = '#cbd5e1';
+                            }, 1000);
+                        }
+                    };
+
+                    document.getElementById('reset-btn').onclick = () => {
+                        currentIdx = currentIdx; // stay
+                        nextQuestion();
+                    };
+                };
+
+                updateUI();
+            };
+
+            nextQuestion();
+        },
+
+        speak(text) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const ut = new SpeechSynthesisUtterance(text);
+                ut.lang = 'en-US';
+                ut.rate = 0.8;
+                window.speechSynthesis.speak(ut);
+            }
+        }
+    };
+
+    // Start app
+    app.init();
+</script>
