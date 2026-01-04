@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Games for Primary School</title>
+    <style>
+        /* 
+         * =========================================
+         *               CSS STYLES
+         * =========================================
+         */
+        :root {
+            --primary: #3b82f6; /* Blue */
+            --secondary: #eab308; /* Yellow */
+            --success: #22c55e; /* Green */
+            --danger: #ef4444; /* Red */
+            --bg: #f0f9ff;
+            --text: #1e3a8a;
+            --card: #ffffff;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Layout --- */
+        header {
+            background-color: white;
+            padding: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            border-bottom: 4px solid #dbeafe;
+        }
+
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        main {
+            flex: 1;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #93c5fd;
+            font-size: 0.9rem;
+        }
+
+        /* --- Components --- */
+        .btn {
+            border: none;
+            padding: 12px 24px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.1s, filter 0.2s;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .btn-primary { background-color: var(--primary); color: white; border-bottom: 4px solid #2563eb; }
+        .btn-secondary { background-color: var(--secondary); color: #713f12; border-bottom: 4px solid #ca8a04; }
+        .btn-success { background-color: var(--success); color: white; border-bottom: 4px solid #16a34a; }
+        .btn-danger { background-color: var(--danger); color: white; border-bottom: 4px solid #dc2626; }
+        .btn-outline { background-color: white; color: #64748b; border: 2px solid #e2e8f0; box-shadow: none; }
+
+        .card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }
+
+        .hidden { display: none !important; }
+
+        /* --- Game Specific --- */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            padding: 30px;
+            border-radius: 24px;
+            color: white;
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-bottom: 6px solid rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .menu-item:hover { transform: translateY(-4px); }
+        .menu-item span { position: relative; z-index: 2; }
+        .menu-item::after {
+            content: '★';
+            position: absolute;
+            bottom: -20px;
+            right: -20px;
+            font-size: 100px;
+            opacity: 0.2;
+            transform: rotate(15deg);
+        }
+
+        .bg-purple { background-color: #a855f7; }
+        .bg-blue { background-color: #3b82f6; }
+        .bg-pink { background-color: #ec4899; }
+        .bg-green { background-color: #22c55e; }
+        .bg-orange { background-color: #f97316; }
+
+        /* Matching Game */
+        .match-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .match-card {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-bottom: 4px solid #e2e8f0;
+            transition: all 0.3s;
+            padding: 5px;
+            word-break: break-word;
+        }
+        .match-card.flipped { background: #dbeafe; color: #1e40af; border-color: #93c5fd; }
+        .match-card.matched { opacity: 0; pointer-events: none; }
+
+        /* Fill Blank */
+        .blank-line {
+            display: inline-block;
+            min-width: 60px;
+            border-bottom: 3px dashed #94a3b8;
+            margin: 0 5px;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* Ordering */
+        .word-bank, .sentence-drop {
+            min-height: 80px;
+            padding: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+        .word-chip {
+            background: white;
+            border: 2px solid #e2e8f0;
+            padding: 8px 16px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            user-select: none;
+        }
+        .sentence-drop .word-chip { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+
+        /* Grade Selector */
+        select {
+            padding: 8px 12px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #475569;
+            cursor: pointer;
+        }
+
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
+  }
+}
+</script>
+</head>
+<body>
+
+    <header>
+        <div class="header-content">
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span style="font-size: 2rem;">🎓</span>
+                <div>
+                    <h1>English Class</h1>
+                    <small style="color: #94a3b8; font-weight: bold;">MS DAN'S APP</small>
+                </div>
+            </div>
+            <div>
+                <select id="gradeSelector" onchange="app.changeGrade()">
+                    <option value="3">Grade 3</option>
+                    <option value="4">Grade 4</option>
+                    <option value="5">Grade 5</option>
+                </select>
+            </div>
+        </div>
+    </header>
+
+    <main id="app">
+        <!-- Views will be injected here by JavaScript -->
+    </main>
+
+    <footer>
+        <p>© 2026 Ms Dan - Primary English Education</p>
+    </footer>
+
+    <script>
+        /**
+         * =========================================
+         *           TEACHER EDIT AREA
+         * =========================================
+         * 
+         * INSTRUCTIONS FOR TEACHERS:
+         * 1. You can edit the text inside the quotes "".
+         * 2. 'en' is the English word/sentence.
+         * 3. 'vi' is the Vietnamese meaning.
+         * 4. For Sentences, 'missing' is the word students need to fill in.
+         * 
+         * Be careful with commas (,) and brackets {}!
+         */
+
+        const GAME_DATA = {
+            // ================= GRADE 3 CONTENT =================
+            3: {
+                vocabulary: [
+                    { en: "Stand up", vi: "Đứng lên" },
+                    { en: "Sit down", vi: "Ngồi xuống" },
+                    { en: "Open book", vi: "Mở sách" },
+                    { en: "Close book", vi: "Đóng sách" },
+                    { en: "Red", vi: "Màu đỏ" },
+                    { en: "Blue", vi: "Màu xanh dương" },
+                    { en: "Green", vi: "Màu xanh lá" },
+                    { en: "Yellow", vi: "Màu vàng" },
+                    { en: "Six", vi: "Số 6" },
+                    { en: "Seven", vi: "Số 7" },
+                    { en: "Eight", vi: "Số 8" },
+                    { en: "Nine", vi: "Số 9" },
+                    { en: "Ten", vi: "Số 10" }
+                ],
+                sentences: [
+                    { en: "Hello how are you", vi: "Xin chào, bạn khỏe không?", missing: "are" },
+                    { en: "I am fine thank you", vi: "Tôi khỏe, cảm ơn.", missing: "fine" },
+                    { en: "What color is it", vi: "Nó là màu gì?", missing: "color" },
+                    { en: "It is red", vi: "Nó màu đỏ.", missing: "red" },
+                    { en: "How old are you", vi: "Bạn bao nhiêu tuổi?", missing: "old" },
+                    { en: "I am eight years old", vi: "Tôi 8 tuổi.", missing: "eight" }
+                ]
+            },
+
+            // ================= GRADE 4 CONTENT =================
+            4: {
+                vocabulary: [
+                    { en: "Morning", vi: "Buổi sáng" },
+                    { en: "Afternoon", vi: "Buổi chiều" },
+                    { en: "Evening", vi: "Buổi tối" },
+                    { en: "Night", vi: "Buổi đêm" },
+                    { en: "Vietnam", vi: "Việt Nam" },
+                    { en: "America", vi: "Mỹ" },
+                    { en: "Japan", vi: "Nhật Bản" },
+                    { en: "England", vi: "Nước Anh" }
+                ],
+                sentences: [
+                    { en: "Good morning teacher", vi: "Chào buổi sáng cô giáo", missing: "morning" },
+                    { en: "Where are you from", vi: "Bạn đến từ đâu?", missing: "from" },
+                    { en: "I am from Vietnam", vi: "Tôi đến từ Việt Nam", missing: "Vietnam" },
+                    { en: "Nice to see you again", vi: "Rất vui được gặp lại bạn", missing: "again" }
+                ]
+            },
+
+            // ================= GRADE 5 CONTENT =================
+            5: {
+                vocabulary: [
+                    { en: "Address", vi: "Địa chỉ" },
+                    { en: "Lane", vi: "Ngõ/Hẻm" },
+                    { en: "Village", vi: "Làng quê" },
+                    { en: "City", vi: "Thành phố" },
+                    { en: "Tower", vi: "Tòa tháp" },
+                    { en: "Floor", vi: "Tầng" },
+                    { en: "Hometown", vi: "Quê hương" }
+                ],
+                sentences: [
+                    { en: "What is your address", vi: "Địa chỉ của bạn là gì?", missing: "address" },
+                    { en: "It is Flat 8 second floor", vi: "Nó là căn hộ 8 tầng 2", missing: "floor" },
+                    { en: "Who do you live with", vi: "Bạn sống với ai?", missing: "live" },
+                    { en: "I live with my parents", vi: "Tôi sống với bố mẹ", missing: "parents" }
+                ]
+            }
+        };
+
+        /**
+         * =========================================
+         *            APP LOGIC (DO NOT EDIT)
+         * =========================================
+         */
+
+        const app = {
+            state: {
+                grade: 3,
+                score: 0,
+                currentView: 'menu',
+                gameData: null,
+                timer: null
+            },
+
+            // --- Core Functions ---
+            init: function() {
+                this.renderMenu();
+            },
+
+            changeGrade: function() {
+                const selector = document.getElementById('gradeSelector');
+                this.state.grade = parseInt(selector.value);
+                this.playSound('click');
+                this.renderMenu(); // Reset to menu on grade change
+            },
+
+            speak: function(text) {
+                if (!window.speechSynthesis) return;
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = 0.8;
+                window.speechSynthesis.speak(utterance);
+            },
+
+            playSound: function(type) {
+                // Placeholder for sound effects if files were available
+                // For now, we rely on visual feedback and TTS
+            },
+
+            shuffle: function(array) {
+                return array.sort(() => Math.random() - 0.5);
+            },
+
+            updateScore: function(points) {
+                this.state.score += points;
+                // We could add a score display update here if needed
+            },
+
+            // --- Renderers ---
+            renderMenu: function() {
+                const container = document.getElementById('app');
+                container.innerHTML = `
+                    <div class="card" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white;">
+                        <h2>Welcome Students! 👋</h2>
+                        <p>Grade ${this.state.grade} - Choose a game to start</p>
+                    </div>
+
+                    <div class="menu-grid">
+                        <div class="menu-item bg-purple" onclick="app.startMatching()">
+                            <span>🧩 Vocabulary Match</span>
+                        </div>
+                        <div class="menu-item bg-blue" onclick="app.startQuiz()">
+                            <span>❓ Multiple Choice</span>
+                        </div>
+                        <div class="menu-item bg-pink" onclick="app.startListening()">
+                            <span>🎧 Listen & Choose</span>
+                        </div>
+                        <div class="menu-item bg-green" onclick="app.startFillBlank()">
+                            <span>✍️ Fill in Blank</span>
+                        </div>
+                        <div class="menu-item bg-orange" onclick="app.startOrdering()">
+                            <span>🔤 Sentence Order</span>
+                        </div>
+                    </div>
+                `;
+            },
+
+            renderHeader: function(title) {
+                return `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <button class="btn btn-outline" onclick="app.renderMenu()">⬅ Home</button>
+                        <h2 style="margin:0; color: var(--primary);">${title}</h2>
+                        <div style="width: 80px;"></div> <!-- Spacer for centering -->
+                    </div>
+                `;
+            },
+
+            // ================= GAMES =================
+
+            // 1. MATCHING GAME
+            startMatching: function() {
+                const vocab = this.shuffle([...GAME_DATA[this.state.grade].vocabulary]).slice(0, 6);
+                let cards = [];
+                vocab.forEach((v, i) => {
+                    cards.push({ id: i, text: v.en, type: 'en', pairId: i });
+                    cards.push({ id: i, text: v.vi, type: 'vi', pairId: i });
+                });
+                this.state.gameData = {
+                    cards: this.shuffle(cards),
+                    flipped: [],
+                    matched: []
+                };
+                this.renderMatching();
+            },
+
+            renderMatching: function() {
+                const { cards, flipped, matched } = this.state.gameData;
+                const isComplete = matched.length === cards.length;
+
+                let html = this.renderHeader('Vocabulary Match');
+                
+                if (isComplete) {
+                    html += `
+                        <div class="card" style="margin-top: 50px;">
+                            <h2 style="color: var(--success); font-size: 3rem;">🎉 Excellent!</h2>
+                            <p>You matched all words!</p>
+                            <button class="btn btn-success" onclick="app.startMatching()">Play Again</button>
+                        </div>
+                    `;
+                } else {
+                    html += `<div class="match-grid">`;
+                    cards.forEach((card, idx) => {
+                        const isFlipped = flipped.includes(idx);
+                        const isMatched = matched.includes(idx);
+                        const classes = `match-card ${isFlipped ? 'flipped' : ''} ${isMatched ? 'matched' : ''}`;
+                        
+                        html += `
+                            <div class="${classes}" onclick="app.handleCardClick(${idx})">
+                                ${isFlipped || isMatched ? card.text : '?'}
+                            </div>
+                        `;
+                    });
+                    html += `</div>`;
+                }
+                document.getElementById('app').innerHTML = html;
+            },
+
+            handleCardClick: function(idx) {
+                const { flipped, matched, cards } = this.state.gameData;
+                if (flipped.length >= 2 || flipped.includes(idx) || matched.includes(idx)) return;
+
+                // Play audio if English card
+                if (cards[idx].type === 'en') this.speak(cards[idx].text);
+
+                flipped.push(idx);
+                this.renderMatching();
+
+                if (flipped.length === 2) {
+                    const c1 = cards[flipped[0]];
+                    const c2 = cards[flipped[1]];
+                    
+                    if (c1.pairId === c2.pairId) {
+                        // Match
+                        setTimeout(() => {
+                            this.state.gameData.matched.push(flipped[0], flipped[1]);
+                            this.state.gameData.flipped = [];
+                            this.renderMatching();
+                        }, 500);
+                    } else {
+                        // No Match
+                        setTimeout(() => {
+                            this.state.gameData.flipped = [];
+                            this.renderMatching();
+                        }, 1000);
+                    }
+                }
+            },
+
+            // 2. QUIZ GAME
+            startQuiz: function() {
+                const vocab = GAME_DATA[this.state.grade].vocabulary;
+                const questions = vocab.map(v => {
+                    const others = this.shuffle(vocab.filter(i => i !== v)).slice(0, 3).map(i => i.vi);
+                    return {
+                        q: `What does "${v.en}" mean?`,
+                        correct: v.vi,
+                        options: this.shuffle([v.vi, ...others]),
+                        speak: v.en
+                    };
+                });
+                
+                this.state.gameData = {
+                    questions: this.shuffle(questions),
+                    currentIdx: 0,
+                    score: 0,
+                    showResult: false
+                };
+                this.renderQuiz();
+            },
+
+            renderQuiz: function() {
+                const { questions, currentIdx, showResult, score, lastAnswer } = this.state.gameData;
+                let html = this.renderHeader('Multiple Choice');
+
+                if (showResult) {
+                    html += `
+                        <div class="card">
+                            <h2>Quiz Complete!</h2>
+                            <p style="font-size: 1.5rem;">Score: ${score} / ${questions.length}</p>
+                            <button class="btn btn-primary" onclick="app.startQuiz()">Try Again</button>
+                        </div>
+                    `;
+                } else {
+                    const q = questions[currentIdx];
+                    html += `
+                        <div class="card">
+                            <span style="color: #94a3b8; font-weight: bold;">Question ${currentIdx + 1}/${questions.length}</span>
+                            <h2 style="font-size: 2rem; margin: 20px 0;">${q.q}</h2>
+                            <button class="btn btn-sm btn-secondary" onclick="app.speak('${q.speak}')">🔊 Listen</button>
+                        </div>
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                    `;
+                    
+                    q.options.forEach(opt => {
+                        let btnClass = 'btn-outline';
+                        if (lastAnswer) {
+                            if (opt === q.correct) btnClass = 'btn-success';
+                            else if (opt === lastAnswer && opt !== q.correct) btnClass = 'btn-danger';
+                        }
+                        
+                        html += `
+                            <button class="btn ${btnClass}" style="height: 80px; font-size: 1.2rem;" 
+                                onclick="app.handleQuizAnswer('${opt}')" 
+                                ${lastAnswer ? 'disabled' : ''}>
+                                ${opt}
+                            </button>
+                        `;
+                    });
+                    html += `</div>`;
+                    
+                    if (lastAnswer) {
+                        html += `
+                            <div style="text-align: right; margin-top: 20px;">
+                                <button class="btn btn-primary" onclick="app.nextQuestion()">Next ➡</button>
+                            </div>
+                        `;
+                    }
+                }
+                document.getElementById('app').innerHTML = html;
+            },
+
+            handleQuizAnswer: function(ans) {
+                const q = this.state.gameData.questions[this.state.gameData.currentIdx];
+                this.state.gameData.lastAnswer = ans;
+                if (ans === q.correct) {
+                    this.state.gameData.score++;
+                    this.speak("Correct");
+                } else {
+                    this.speak("Wrong");
+                }
+                this.renderQuiz();
+            },
+
+            nextQuestion: function() {
+                const { questions, currentIdx } = this.state.gameData;
+                if (currentIdx < questions.length - 1) {
+                    this.state.gameData.currentIdx++;
+                    this.state.gameData.lastAnswer = null;
+                } else {
+                    this.state.gameData.showResult = true;
+                }
+                this.renderQuiz();
+            },
+
+            // 3. LISTEN & CHOOSE
+            startListening: function() {
+                const vocab = GAME_DATA[this.state.grade].vocabulary;
+                this.state.gameData = {
+                    target: null,
+                    options: [],
+                    status: 'waiting' // waiting, success, error
+                };
+                this.nextListenRound();
+            },
+
+            nextListenRound: function() {
+                const vocab = GAME_DATA[this.state.grade].vocabulary;
+                const target = vocab[Math.floor(Math.random() * vocab.length)];
+                const others = this.shuffle(vocab.filter(v => v !== target)).slice(0, 3).map(v => v.vi);
+                
+                this.state.gameData.target = target;
+                this.state.gameData.options = this.shuffle([target.vi, ...others]);
+                this.state.gameData.status = 'waiting';
+                this.renderListen();
+            },
+
+            renderListen: function() {
+                const { target, options, status } = this.state.gameData;
+                let html = this.renderHeader('Listen & Choose');
+
+                html += `
+                    <div class="card" style="padding: 40px;">
+                        <button class="btn btn-primary" style="width: 100px; height: 100px; border-radius: 50%; font-size: 3rem;" onclick="app.speak('${target.en}')">
+                            🔊
+                        </button>
+                        <p style="margin-top: 20px; color: #64748b;">Tap to listen</p>
+                    </div>
+                    <div class="grid" style="gap: 15px;">
+                `;
+
+                options.forEach(opt => {
+                    let btnClass = 'btn-outline';
+                    if (status === 'success' && opt === target.vi) btnClass = 'btn-success';
+                    if (status === 'error' && opt !== target.vi) btnClass = 'opacity-50 btn-outline'; // dim others
+                    
+                    html += `
+                        <button class="btn ${btnClass}" style="height: 60px; font-size: 1.1rem;" onclick="app.checkListen('${opt}')">
+                            ${opt}
+                        </button>
+                    `;
+                });
+                html += `</div>`;
+                
+                if (status === 'success') {
+                    html += `<div style="text-align: center; margin-top: 20px; color: var(--success); font-weight: bold; font-size: 1.5rem;">Correct! Loading next...</div>`;
+                } else if (status === 'error') {
+                    html += `<div style="text-align: center; margin-top: 20px; color: var(--danger); font-weight: bold;">Try again!</div>`;
+                }
+
+                document.getElementById('app').innerHTML = html;
+            },
+
+            checkListen: function(ans) {
+                const { target } = this.state.gameData;
+                if (this.state.gameData.status === 'success') return;
+
+                if (ans === target.vi) {
+                    this.state.gameData.status = 'success';
+                    this.renderListen();
+                    setTimeout(() => this.nextListenRound(), 1500);
+                } else {
+                    this.state.gameData.status = 'error';
+                    this.speak("Try again");
+                    this.renderListen();
+                }
+            },
+
+            // 4. FILL BLANK
+            startFillBlank: function() {
+                const sentences = this.shuffle([...GAME_DATA[this.state.grade].sentences]);
+                this.state.gameData = {
+                    list: sentences,
+                    idx: 0,
+                    status: null
+                };
+                this.renderFillBlank();
+            },
+
+            renderFillBlank: function() {
+                const { list, idx, status } = this.state.gameData;
+                const item = list[idx];
+                
+                // Prepare sentence parts
+                const parts = item.en.split(item.missing);
+                
+                // Prepare options (missing word + 2 randoms)
+                // In a real app we'd get smarter distractors, here we just pick random words from vocab
+                const vocab = GAME_DATA[this.state.grade].vocabulary;
+                const randomWords = this.shuffle(vocab).slice(0, 2).map(v => v.en.split(' ')[0]); // take first word
+                const options = this.shuffle([item.missing, ...randomWords]);
+
+                let html = this.renderHeader('Fill in the Blank');
+
+                html += `
+                    <div class="card" style="padding: 40px 20px;">
+                        <h2 style="font-size: 1.8rem; line-height: 2;">
+                            ${parts[0]} 
+                            <span class="blank-line">${status === 'correct' ? item.missing : '___'}</span> 
+                            ${parts[1]}
+                        </h2>
+                        <p style="color: #64748b; font-style: italic; margin-top: 20px;">"${item.vi}"</p>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                `;
+
+                options.forEach(opt => {
+                    html += `<button class="btn btn-outline" style="min-width: 100px;" onclick="app.checkFillBlank('${opt}')">${opt}</button>`;
+                });
+
+                html += `</div>`;
+
+                if (status === 'correct') {
+                    html += `
+                        <div style="text-align: center; margin-top: 30px;">
+                            <button class="btn btn-success" onclick="app.nextFillBlank()">Next Sentence ➡</button>
+                        </div>
+                    `;
+                }
+
+                document.getElementById('app').innerHTML = html;
+            },
+
+            checkFillBlank: function(ans) {
+                const { list, idx } = this.state.gameData;
+                const item = list[idx];
+                
+                if (ans === item.missing) {
+                    this.state.gameData.status = 'correct';
+                    this.speak(item.en);
+                    this.renderFillBlank();
+                } else {
+                    this.speak("Try again");
+                }
+            },
+
+            nextFillBlank: function() {
+                const { list, idx } = this.state.gameData;
+                if (idx < list.length - 1) {
+                    this.state.gameData.idx++;
+                    this.state.gameData.status = null;
+                    this.renderFillBlank();
+                } else {
+                    alert("Great job! You finished all sentences.");
+                    this.renderMenu();
+                }
+            },
+
+            // 5. SENTENCE ORDERING
+            startOrdering: function() {
+                const sentences = this.shuffle([...GAME_DATA[this.state.grade].sentences]);
+                this.state.gameData = {
+                    list: sentences,
+                    idx: 0,
+                    currentWords: [], // words currently in bank
+                    placedWords: [], // words placed in sentence
+                    status: null
+                };
+                this.initOrderRound();
+            },
+
+            initOrderRound: function() {
+                const item = this.state.gameData.list[this.state.gameData.idx];
+                const words = item.en.split(' ');
+                
+                this.state.gameData.currentWords = this.shuffle(words.map((w, i) => ({ id: i, text: w })));
+                this.state.gameData.placedWords = [];
+                this.state.gameData.status = null;
+                this.renderOrdering();
+            },
+
+            renderOrdering: function() {
+                const { list, idx, currentWords, placedWords, status } = this.state.gameData;
+                const item = list[idx];
+
+                let html = this.renderHeader('Sentence Builder');
+                
+                html += `
+                    <div style="text-align: center; margin-bottom: 20px; color: #64748b; font-style: italic;">
+                        Meaning: "${item.vi}"
+                    </div>
+
+                    <div class="card sentence-drop">
+                        ${placedWords.length === 0 ? '<span style="color: #cbd5e1;">Tap words to build sentence...</span>' : ''}
+                        ${placedWords.map(w => `<span class="word-chip" onclick="app.removeWord(${w.id})">${w.text}</span>`).join('')}
+                    </div>
+
+                    <div class="word-bank">
+                        ${currentWords.map(w => `<span class="word-chip" onclick="app.addWord(${w.id})">${w.text}</span>`).join('')}
+                    </div>
+                `;
+
+                if (status === 'correct') {
+                    html += `
+                        <div style="text-align: center; margin-top: 20px;">
+                            <h3 style="color: var(--success);">Correct!</h3>
+                            <button class="btn btn-success" onclick="app.nextOrdering()">Next ➡</button>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="app.checkOrdering()">Check Answer</button>
+                        </div>
+                    `;
+                }
+                
+                document.getElementById('app').innerHTML = html;
+            },
+
+            addWord: function(id) {
+                if (this.state.gameData.status === 'correct') return;
+                const word = this.state.gameData.currentWords.find(w => w.id === id);
+                this.state.gameData.currentWords = this.state.gameData.currentWords.filter(w => w.id !== id);
+                this.state.gameData.placedWords.push(word);
+                this.renderOrdering();
+            },
+
+            removeWord: function(id) {
+                if (this.state.gameData.status === 'correct') return;
+                const word = this.state.gameData.placedWords.find(w => w.id === id);
+                this.state.gameData.placedWords = this.state.gameData.placedWords.filter(w => w.id !== id);
+                this.state.gameData.currentWords.push(word);
+                this.renderOrdering();
+            },
+
+            checkOrdering: function() {
+                const { list, idx, placedWords } = this.state.gameData;
+                const item = list[idx];
+                const sentence = placedWords.map(w => w.text).join(' ');
+                
+                if (sentence === item.en) {
+                    this.state.gameData.status = 'correct';
+                    this.speak(item.en);
+                } else {
+                    this.speak("Try again");
+                }
+                this.renderOrdering();
+            },
+
+            nextOrdering: function() {
+                const { list, idx } = this.state.gameData;
+                if (idx < list.length - 1) {
+                    this.state.gameData.idx++;
+                    this.initOrderRound();
+                } else {
+                    alert("All sentences completed!");
+                    this.renderMenu();
+                }
+            }
+        };
+
+        // Start App
+        app.init();
+
+    </script>
+</body>
+</html>
